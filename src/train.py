@@ -27,9 +27,18 @@ normalization_layer = keras.layers.Rescaling(1./255)
 train_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
 val_ds = val_ds.map(lambda x, y: (normalization_layer(x), y))
 
+# Define how data will be augmented to help reduce overfitting
+data_augmentation = keras.Sequential([
+    keras.layers.RandomFlip("horizontal"),
+    keras.layers.RandomRotation(0.05),
+    keras.layers.RandomZoom(0.1),
+])
+
 # Define the model
 model = keras.Sequential([
     keras.layers.Input(shape=(48, 48, 1)),
+
+    data_augmentation,
 
     keras.layers.Conv2D(32, (3, 3), activation='relu'),
     keras.layers.MaxPooling2D((2, 2)),  # Pool on 2x2 grids
@@ -40,6 +49,7 @@ model = keras.Sequential([
     keras.layers.Flatten(),
 
     keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dropout(0.5),
     keras.layers.Dense(7, activation='softmax'),
 ])
 
