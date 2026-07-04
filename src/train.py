@@ -45,8 +45,6 @@ data_augmentation = keras.Sequential([
     keras.layers.RandomFlip("horizontal"),
     keras.layers.RandomRotation(0.05),
     keras.layers.RandomZoom(0.1),
-    keras.layers.RandomContrast(0.1),
-    keras.layers.RandomBrightness(0.1, value_range=(0, 1)),
 ])
 
 # Define class weights to punish or reward more
@@ -123,7 +121,7 @@ history = model.fit(
 )
 
 # Save the best model if we wanted to use for later
-model.save('models/v1_emotion_model_brightness.keras')
+model.save('models/v2_emotion_model_baseline.keras')
 
 # Get true labels and predictions for the whole test set
 y_true = []
