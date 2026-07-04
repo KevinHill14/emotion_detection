@@ -1,4 +1,6 @@
 from tensorflow import keras
+import numpy as np
+from sklearn.metrics import confusion_matrix
 
 # Import data for training
 val_ds = keras.utils.image_dataset_from_directory(
@@ -22,10 +24,20 @@ train_ds = keras.utils.image_dataset_from_directory(
     seed=1
 )
 
+# Import data for testing
+test_ds = keras.utils.image_dataset_from_directory(
+    "data/test",
+    color_mode="grayscale",
+    image_size=(48, 48),
+    label_mode="categorical",
+    shuffle=False,
+)
+
 # Attach step to datasets (New layer)
 normalization_layer = keras.layers.Rescaling(1./255)
 train_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
 val_ds = val_ds.map(lambda x, y: (normalization_layer(x), y))
+test_ds = test_ds.map(lambda x, y: (normalization_layer(x), y))
 
 # Define how data will be augmented to help reduce overfitting
 data_augmentation = keras.Sequential([
@@ -90,4 +102,17 @@ history = model.fit(
     class_weight=class_weight
 )
 
-model.save('models/emotion_model_v2_50epochs.h5')
+# Save the best model if we wanted to use for later
+model.save('models/emotion_model_v4_testingclassweight.h5')
+
+# Get true labels and predictions for the whole test set
+y_true = []
+y_pred = []
+
+for images, labels in test_ds:
+    preds = model.predict(images, verbose=0)
+    y_true.extend(np.argmax(labels, axis=1))
+    y_pred.extend(np.argmax(preds, axis=1))
+
+cm = confusion_matrix(y_true, y_pred)
+print(cm)
