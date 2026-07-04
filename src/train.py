@@ -60,18 +60,23 @@ class_weight = {
 # Define the model
 model = keras.Sequential([
     keras.layers.Input(shape=(48, 48, 1)),
-
     data_augmentation,
 
     keras.layers.Conv2D(32, (3, 3), activation='relu'),
+    keras.layers.BatchNormalization(),
     keras.layers.MaxPooling2D((2, 2)),  # Pool on 2x2 grids
 
     keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    keras.layers.BatchNormalization(),
     keras.layers.MaxPooling2D((2, 2)),
+
+    keras.layers.Conv2D(128, (3, 3), activation='relu'),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPooling2D((2, 2)),  
 
     keras.layers.Flatten(),
 
-    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dense(256, activation='relu'),
     keras.layers.Dropout(0.5),
     keras.layers.Dense(7, activation='softmax'),
 ])
@@ -97,13 +102,13 @@ early_stop = keras.callbacks.EarlyStopping(
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=50,
+    epochs=80,
     callbacks=[early_stop],
     class_weight=class_weight
 )
 
 # Save the best model if we wanted to use for later
-model.save('models/emotion_model_rooted_class_weight_v4.keras')
+model.save('models/emotion_model_batchnorms_v1.keras')
 
 # Get true labels and predictions for the whole test set
 y_true = []
