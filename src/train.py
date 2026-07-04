@@ -80,9 +80,9 @@ model = keras.Sequential([
 
     keras.layers.Flatten(),
 
-    keras.layers.Dense(256, activation='relu', kernel_regularizer=keras.regularizers.l2(0.001)),
-    keras.layers.Dropout(0.5),
-    keras.layers.Dense(7, activation='softmax', kernel_regularizer=keras.regularizers.l2(0.001)),
+    keras.layers.Dense(256, activation='relu', kernel_regularizer=keras.regularizers.l2(0.005)),
+    keras.layers.Dropout(0.6),
+    keras.layers.Dense(7, activation='softmax', kernel_regularizer=keras.regularizers.l2(0.005)),
 ])
 
 # Check params
@@ -120,7 +120,7 @@ history = model.fit(
 )
 
 # Save the best model if we wanted to use for later
-model.save('models/emotion_model_anger1.15_v1.keras')
+model.save('models/emotion_model_allconditons_met_v2.keras')
 
 # Get true labels and predictions for the whole test set
 y_true = []
