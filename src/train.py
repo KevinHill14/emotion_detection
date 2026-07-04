@@ -34,6 +34,17 @@ data_augmentation = keras.Sequential([
     keras.layers.RandomZoom(0.1),
 ])
 
+# Define class weights to punish or reward more
+class_weight = {
+    0: 1.027,   # angry
+    1: 9.407,   # disgust
+    2: 1.001,   # fear
+    3: 0.568,   # happy
+    4: 0.826,   # neutral
+    5: 0.849,   # sad
+    6: 1.293,   # surprise
+}
+
 # Define the model
 model = keras.Sequential([
     keras.layers.Input(shape=(48, 48, 1)),
@@ -75,7 +86,8 @@ history = model.fit(
     train_ds,
     validation_data=val_ds,
     epochs=50,
-    callbacks=[early_stop]
+    callbacks=[early_stop],
+    class_weight=class_weight
 )
 
 model.save('models/emotion_model_v2_50epochs.h5')
