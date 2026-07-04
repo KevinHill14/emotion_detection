@@ -74,17 +74,21 @@ model = keras.Sequential([
     keras.layers.BatchNormalization(),
     keras.layers.MaxPooling2D((2, 2)),  
 
+    keras.layers.Conv2D(256, (3, 3), activation='relu'),
+    keras.layers.BatchNormalization(),
+    #keras.layers.MaxPooling2D((2, 2)),  
+
     keras.layers.Flatten(),
 
-    keras.layers.Dense(256, activation='relu'),
+    keras.layers.Dense(256, activation='relu', kernel_regularizer=keras.regularizers.l2(0.001)),
     keras.layers.Dropout(0.5),
-    keras.layers.Dense(7, activation='softmax'),
+    keras.layers.Dense(7, activation='softmax', kernel_regularizer=keras.regularizers.l2(0.001)),
 ])
 
 # Check params
 model.summary()
 
-# Compile the model
+# # Compile the model
 model.compile(
     optimizer='adam',
     loss=keras.losses.CategoricalCrossentropy(label_smoothing=0.1),
