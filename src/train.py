@@ -63,9 +63,19 @@ model.compile(
     metrics=['accuracy']
 )
 
+# Setup early stopping on the training
+early_stop = keras.callbacks.EarlyStopping(
+    monitor='val_loss',
+    patience=5,
+    restore_best_weights=True
+)
+
 # Train the model
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=15
+    epochs=50,
+    callbacks=[early_stop]
 )
+
+model.save('models/emotion_model_v2_50epochs.h5')
