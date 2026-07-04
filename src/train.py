@@ -48,12 +48,12 @@ data_augmentation = keras.Sequential([
 
 # Define class weights to punish or reward more
 class_weight = {
-    0: 1.15,   # angry
-    1: 4,   # disgust
-    2: 1.400,   # fear
+    0: 1.150,   # angry
+    1: 4.000,   # disgust
+    2: 1.500,   # fear
     3: 0.754,   # happy
     4: 0.909,   # neutral
-    5: 1.150,   # sad
+    5: 1.300,   # sad
     6: 1.137,   # surprise
 }
 
