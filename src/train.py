@@ -34,6 +34,9 @@ test_ds = keras.utils.image_dataset_from_directory(
     shuffle=False,
 )
 
+# Define classes
+class_names = val_ds.class_names
+
 # Attach step to datasets (New layer)
 normalization_layer = keras.layers.Rescaling(1./255)
 train_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
@@ -92,7 +95,7 @@ model.summary()
 # Compile the model
 model.compile(
     optimizer='adam',
-    loss=keras.losses.CategoricalCrossentropy(label_smoothing=0.1),
+    loss=keras.losses.CategoricalCrossentropy(label_smoothing=0.05),
     metrics=['accuracy']
 )
 
@@ -121,7 +124,7 @@ history = model.fit(
 )
 
 # Save the best model if we wanted to use for later
-model.save('models/v2_emotion_model_baseline.keras')
+model.save('models/v3_emotion_model_lighter_smoothing.keras')
 
 # Get true labels and predictions for the whole test set
 y_true = []
@@ -136,4 +139,4 @@ for images, labels in val_ds:
 # Print debug information
 cm = confusion_matrix(y_true, y_pred)
 print(cm)
-print(classification_report(y_true, y_pred, target_names=val_ds.class_names))
+print(classification_report(y_true, y_pred, target_names=class_names))
