@@ -48,13 +48,13 @@ data_augmentation = keras.Sequential([
 
 # Define class weights to punish or reward more
 class_weight = {
-    0: 1.027,   # angry
-    1: 9.407,   # disgust
+    0: 1.013,   # angry
+    1: 3.067,   # disgust
     2: 1.001,   # fear
-    3: 0.568,   # happy
-    4: 0.826,   # neutral
-    5: 0.849,   # sad
-    6: 1.293,   # surprise
+    3: 0.754,   # happy
+    4: 0.909,   # neutral
+    5: 0.921,   # sad
+    6: 1.137,   # surprise
 }
 
 # Define the model
@@ -103,7 +103,7 @@ history = model.fit(
 )
 
 # Save the best model if we wanted to use for later
-model.save('models/emotion_model_v4_testingclassweight.h5')
+model.save('models/emotion_model_rooted_class_weight_v4.keras')
 
 # Get true labels and predictions for the whole test set
 y_true = []
