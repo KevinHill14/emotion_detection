@@ -98,17 +98,25 @@ early_stop = keras.callbacks.EarlyStopping(
     restore_best_weights=True
 )
 
+# Smooth learning
+reduce_lr = keras.callbacks.ReduceLROnPlateau(
+    monitor='val_loss',
+    factor=0.5,
+    patience=3,
+    min_lr=1e-6
+)
+
 # Train the model
 history = model.fit(
     train_ds,
     validation_data=val_ds,
     epochs=80,
-    callbacks=[early_stop],
+    callbacks=[early_stop, reduce_lr],
     class_weight=class_weight
 )
 
 # Save the best model if we wanted to use for later
-model.save('models/emotion_model_batchnorms_with_1.4fearweightv2.keras')
+model.save('models/emotion_model_smoothedlearing_v2.keras')
 
 # Get true labels and predictions for the whole test set
 y_true = []
