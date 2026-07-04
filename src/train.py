@@ -1,6 +1,7 @@
 from tensorflow import keras
 import numpy as np
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 
 # Import data for training
 val_ds = keras.utils.image_dataset_from_directory(
@@ -44,12 +45,14 @@ data_augmentation = keras.Sequential([
     keras.layers.RandomFlip("horizontal"),
     keras.layers.RandomRotation(0.05),
     keras.layers.RandomZoom(0.1),
+    keras.layers.RandomContrast(0.1),
+    keras.layers.RandomBrightness(0.1, value_range=(0, 1)),
 ])
 
 # Define class weights to punish or reward more
 class_weight = {
     0: 1.150,   # angry
-    1: 4.000,   # disgust
+    1: 4.500,   # disgust
     2: 1.500,   # fear
     3: 0.754,   # happy
     4: 0.909,   # neutral
@@ -88,7 +91,7 @@ model = keras.Sequential([
 # Check params
 model.summary()
 
-# # Compile the model
+# Compile the model
 model.compile(
     optimizer='adam',
     loss=keras.losses.CategoricalCrossentropy(label_smoothing=0.1),
@@ -120,16 +123,19 @@ history = model.fit(
 )
 
 # Save the best model if we wanted to use for later
-model.save('models/emotion_model_allconditons_met_v2.keras')
+model.save('models/v1_emotion_model_brightness.keras')
 
 # Get true labels and predictions for the whole test set
 y_true = []
 y_pred = []
 
-for images, labels in test_ds:
+# Create data for cm
+for images, labels in val_ds:
     preds = model.predict(images, verbose=0)
     y_true.extend(np.argmax(labels, axis=1))
     y_pred.extend(np.argmax(preds, axis=1))
 
+# Print debug information
 cm = confusion_matrix(y_true, y_pred)
 print(cm)
+print(classification_report(y_true, y_pred, target_names=val_ds.class_names))
