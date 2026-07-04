@@ -50,10 +50,10 @@ data_augmentation = keras.Sequential([
 class_weight = {
     0: 1.013,   # angry
     1: 3.067,   # disgust
-    2: 1.4,   # fear
+    2: 1.400,   # fear
     3: 0.754,   # happy
     4: 0.909,   # neutral
-    5: 0.921,   # sad
+    5: 1.150,   # sad
     6: 1.137,   # surprise
 }
 
@@ -108,7 +108,7 @@ history = model.fit(
 )
 
 # Save the best model if we wanted to use for later
-model.save('models/emotion_model_batchnorms_with_2fearweightv2.keras')
+model.save('models/emotion_model_batchnorms_with_1.4fearweightv2.keras')
 
 # Get true labels and predictions for the whole test set
 y_true = []
