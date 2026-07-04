@@ -87,7 +87,7 @@ model.summary()
 # Compile the model
 model.compile(
     optimizer='adam',
-    loss='categorical_crossentropy',
+    loss=keras.losses.CategoricalCrossentropy(label_smoothing=0.1),
     metrics=['accuracy']
 )
 
