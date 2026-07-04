@@ -84,9 +84,9 @@ model = keras.Sequential([
 
     keras.layers.Flatten(),
 
-    keras.layers.Dense(256, activation='relu', kernel_regularizer=keras.regularizers.l2(0.003)),
-    keras.layers.Dropout(0.6),
-    keras.layers.Dense(7, activation='softmax', kernel_regularizer=keras.regularizers.l2(0.003)),
+    keras.layers.Dense(256, activation='relu', kernel_regularizer=keras.regularizers.l2(0.005)),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(7, activation='softmax', kernel_regularizer=keras.regularizers.l2(0.005)),
 ])
 
 # Check params
@@ -95,7 +95,7 @@ model.summary()
 # Compile the model
 model.compile(
     optimizer='adam',
-    loss=keras.losses.CategoricalCrossentropy(label_smoothing=0.1),
+    loss=keras.losses.CategoricalCrossentropy(label_smoothing=0.05),
     metrics=['accuracy']
 )
 
@@ -124,7 +124,7 @@ history = model.fit(
 )
 
 # Save the best model if we wanted to use for later
-model.save('models/v6_emotion_model_middleLvalue.keras')
+model.save('models/v7_emotion_model_lowLSvalue_lowD.keras')
 
 # Get true labels and predictions for the whole test set
 y_true = []
