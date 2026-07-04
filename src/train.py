@@ -50,7 +50,7 @@ data_augmentation = keras.Sequential([
 class_weight = {
     0: 1.013,   # angry
     1: 3.067,   # disgust
-    2: 1.001,   # fear
+    2: 2.000,   # fear
     3: 0.754,   # happy
     4: 0.909,   # neutral
     5: 0.921,   # sad
