@@ -1,10 +1,11 @@
+import time
 import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
 
-# Setup
+# Setup emotions and colours
 EMOTIONS = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
-COLORS = [
+COLOURS = [
     (0, 0, 255),      # Angry - red
     (0, 140, 255),    # Disgust - orange
     (0, 255, 255),    # Fear - yellow
@@ -14,33 +15,53 @@ COLORS = [
     (255, 0, 255),    # Surprise - magenta
 ]
 
+# Load pretrained model
 print("Loading model...")
-model = load_model('models/v3.2_emotion_model_lighter_smoothing.keras')
+model = load_model('main_model/v3.2_emotion_model_lighter_smoothing.keras')
+
+# Initialize face detector with Haar Cascade
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# Open webcam (Windows)
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+# Open webcam
+cap = cv2.VideoCapture(0)
+time.sleep(2)
+
 if not cap.isOpened():
     print("Camera failed to open.")
     exit()
-
 print("Camera on! Press ESC to quit.")
 
 while True:
     ret, frame = cap.read()
+    # If failed to return a frame, exit
     if not ret:
-        print("Failed to grab frame")
+        print("Failed to return frame")
         break
-
+    
+    # Convert frame to grayscale and detect faces
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=7)
 
+    # Safeguard to keep only the largest face
+    if len(faces) > 0:
+        faces = [max(faces, key=lambda f: f[2] * f[3])]
+    else:
+        cv2.putText(frame, "No face detected", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+    # If nothing is detected, display a message
     if len(faces) == 0:
         cv2.putText(frame, "No face detected", (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
     for (x, y, w, h) in faces:
-        roi = gray[y:y+h, x:x+w]
+        # Add a 15% padding around detected faces to maintain facial features
+        pad = int(0.15 * w)
+        x1 = max(0, x - pad)
+        y1 = max(0, y - pad)
+        x2 = min(gray.shape[1], x + w + pad)
+        y2 = min(gray.shape[0], y + h + pad)
+        roi = gray[y1:y2, x1:x2]
         roi = cv2.resize(roi, (48, 48))
         roi = roi.astype('float32') / 255.0
         roi = np.expand_dims(roi, axis=[0, -1])  # shape becomes (1, 48, 48, 1)
@@ -49,7 +70,7 @@ while True:
         emotion_idx = np.argmax(preds)
         emotion = EMOTIONS[emotion_idx]
         confidence = preds[emotion_idx]
-        color = COLORS[emotion_idx]
+        color = COLOURS[emotion_idx]
 
         # Bounding box + label
         cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
@@ -64,12 +85,10 @@ while True:
             bar_y = y + i * 25
             bar_len = int(prob * 100)
             cv2.rectangle(frame, (bar_x, bar_y), (bar_x + 100, bar_y + 18), (50, 50, 50), -1)
-            cv2.rectangle(frame, (bar_x, bar_y), (bar_x + bar_len, bar_y + 18), COLORS[i], -1)
+            cv2.rectangle(frame, (bar_x, bar_y), (bar_x + bar_len, bar_y + 18), COLOURS[i], -1)
             cv2.putText(frame, f"{emo[:3]} {prob*100:.0f}%", (bar_x + 2, bar_y + 13),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 255, 255), 1)
 
-    cv2.putText(frame, "Press Q to quit", (10, frame.shape[0] - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
     cv2.imshow('Emotion Detector', frame)
 
     if cv2.waitKey(1) & 0xFF == 27:
@@ -77,4 +96,13 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-print("Done!")
+print("Exitting!")
+
+#python src/webcam_detect.py
+
+#need to do:
+# comments + clean into my styles on all fronts
+# readme
+# linkedin
+# create the ensemble version of this script (webcam_detect_ensemble.py) and test it
+# add minneightbor thingy into single model
