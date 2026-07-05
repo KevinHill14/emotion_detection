@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.metrics import confusion_matrix, classification_report
 
 test_ds = keras.utils.image_dataset_from_directory(
-    "data/train",
+    "data/test",
     color_mode="grayscale",
     image_size=(48, 48),
     label_mode="categorical",

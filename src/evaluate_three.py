@@ -7,7 +7,6 @@ test_ds = keras.utils.image_dataset_from_directory(
     color_mode="grayscale",
     image_size=(48, 48),
     label_mode="categorical",
-    validation_split=0.1,
     shuffle=False,
 )
 class_names = test_ds.class_names
