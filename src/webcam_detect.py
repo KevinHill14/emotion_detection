@@ -61,25 +61,30 @@ while True:
         y1 = max(0, y - pad)
         x2 = min(gray.shape[1], x + w + pad)
         y2 = min(gray.shape[0], y + h + pad)
+
+        # Extract ROI and process for the model
         roi = gray[y1:y2, x1:x2]
         roi = cv2.resize(roi, (48, 48))
         roi = roi.astype('float32') / 255.0
-        roi = np.expand_dims(roi, axis=[0, -1])  # shape becomes (1, 48, 48, 1)
+        roi = np.expand_dims(roi, axis=[0, -1])
 
+        # Pass image to model and find the highest probability
         preds = model.predict(roi, verbose=0)[0]
         emotion_idx = np.argmax(preds)
+
+        # Set the prediction to corresponding emotion
         emotion = EMOTIONS[emotion_idx]
         confidence = preds[emotion_idx]
         color = COLOURS[emotion_idx]
 
-        # Bounding box + label
+        # Draw bounding box and label around face
         cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
         label = f"{emotion}: {confidence*100:.1f}%"
         cv2.rectangle(frame, (x, y-30), (x+w, y), color, -1)
         cv2.putText(frame, label, (x+5, y-8),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
-        # Confidence bars for all 7 emotions
+        # Draw confidence bars for emotions
         bar_x = x + w + 10
         for i, (emo, prob) in enumerate(zip(EMOTIONS, preds)):
             bar_y = y + i * 25
@@ -88,21 +93,17 @@ while True:
             cv2.rectangle(frame, (bar_x, bar_y), (bar_x + bar_len, bar_y + 18), COLOURS[i], -1)
             cv2.putText(frame, f"{emo[:3]} {prob*100:.0f}%", (bar_x + 2, bar_y + 13),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 255, 255), 1)
-
+            
+    # Display the window
     cv2.imshow('Emotion Detector', frame)
 
+    # Break the loop if ESC is pressed
     if cv2.waitKey(1) & 0xFF == 27:
         break
 
+# Cleanup
 cap.release()
 cv2.destroyAllWindows()
 print("Exitting!")
 
-#python src/webcam_detect.py
-
-#need to do:
-# comments + clean into my styles on all fronts
-# readme
-# linkedin
-# create the ensemble version of this script (webcam_detect_ensemble.py) and test it
-# add minneightbor thingy into single model
+# Terminal input - python src/webcam_detect.py

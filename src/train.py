@@ -25,15 +25,6 @@ train_ds = keras.utils.image_dataset_from_directory(
     seed=1
 )
 
-# Import data for testing
-test_ds = keras.utils.image_dataset_from_directory(
-    "data/test",
-    color_mode="grayscale",
-    image_size=(48, 48),
-    label_mode="categorical",
-    shuffle=False,
-)
-
 # Define classes
 class_names = val_ds.class_names
 
@@ -41,7 +32,6 @@ class_names = val_ds.class_names
 normalization_layer = keras.layers.Rescaling(1./255)
 train_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
 val_ds = val_ds.map(lambda x, y: (normalization_layer(x), y))
-test_ds = test_ds.map(lambda x, y: (normalization_layer(x), y))
 
 # Define how data will be augmented to help reduce overfitting
 data_augmentation = keras.Sequential([
@@ -68,7 +58,7 @@ model = keras.Sequential([
 
     keras.layers.Conv2D(32, (3, 3), activation='relu'),
     keras.layers.BatchNormalization(),
-    keras.layers.MaxPooling2D((2, 2)),  # Pool on 2x2 grids
+    keras.layers.MaxPooling2D((2, 2)),
 
     keras.layers.Conv2D(64, (3, 3), activation='relu'),
     keras.layers.BatchNormalization(),
@@ -126,7 +116,7 @@ history = model.fit(
 # Save the best model if we wanted to use for later
 model.save('models/v8_emotion_model_lowLSvalue_lowL.keras')
 
-# Get true labels and predictions for the whole test set
+# Get true labels and predictions for the whole val set
 y_true = []
 y_pred = []
 
